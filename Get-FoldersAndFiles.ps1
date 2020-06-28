@@ -6,15 +6,16 @@
 
 # Example usage:
 
-# .\Get-FoldersAndFiles.ps1 -Url https://tenant.sharepoint.com/sites/sitename -UseWebLogin -Path "/sites/site/Document library name/Sub folder name" | Sort-Object -Property ServerRelativeUrl
-# .\Get-FoldersAndFiles.ps1 -Url https://tenant.sharepoint.com/sites/sitename -UseWebLogin -DocumentLibrary "Document library name" | Sort-Object -Property ServerRelativeUrl
+# $Folders = .\Get-FoldersAndFiles.ps1 -Url https://tenant.sharepoint.com/sites/sitename -UseWebLogin -Path "/sites/site/Document library name/Sub folder name" | Sort-Object -Property ServerRelativeUrl
+# $Folders = .\Get-FoldersAndFiles.ps1 -Url https://tenant.sharepoint.com/sites/sitename -UseWebLogin -DocumentLibrary "Document library name" | Sort-Object -Property ServerRelativeUrl
 
 Param (
     [string] $Url,
     [switch] $UseWebLogin,
     [string] $DocumentLibrary = $null,
-    [string] $Path = $null
-)
+    [string] $Path = $null,
+    [switch] $DisableProgressCursor
+ )
 
 Connect-PnPOnline -Url $Url -UseWebLogin:$UseWebLogin
 
@@ -37,29 +38,37 @@ if ($null -eq $RootFolder) {
 
 $global:CumulativeFolderInformation = [System.Collections.ArrayList]@()
 
-$anim = @("|", "/", "-", "\") # Animation sequence characters
+$anim = @(" ", "|", "/", "-", "\") # Animation sequence characters
 
 function ProgressCursorAnimation() {
 
-    if ($null -eq $global:AnimationSequence) {
-        Write-Host " " -NoNewline
-        $global:AnimationSequence = 0
-    }
-    else {
-        $global:AnimationSequence++
-        if ($global:AnimationSequence -gt $anim.Length) {
-            $global:AnimationSequence = 0
-        }
-    }
+    if (-not $DisableProgressCursor) {
 
-    Write-Host "`b$($anim[$global:AnimationSequence])" -NoNewline -ForegroundColor Yellow
+        if ($null -eq $global:AnimationSequence) {
+            Write-Host " " -NoNewline
+            $global:AnimationSequence = 1
+        }
+        else {
+            $global:AnimationSequence++
+            if ($global:AnimationSequence -gt $anim.Length) {
+                $global:AnimationSequence = 1
+            }
+        }
+
+        Write-Host "`b$($anim[$global:AnimationSequence])" -NoNewline -ForegroundColor Yellow
+
+    }
 
 }
 
 function CompleteCursorAnimation() {
 
-    if ($null -ne $AnimationSequence) {
-        Write-Host "`b " -NoNewline
+    if (-not $DisableProgressCursor) {
+
+        if ($null -ne $AnimationSequence) {
+            Write-Host "`b " -NoNewline
+        }
+
     }
     
 }

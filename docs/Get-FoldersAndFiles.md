@@ -1,6 +1,6 @@
 # Get-FoldersAndFiles.ps1
 
-Produces a list of all folders in a SharePoint document library.  The following information is extracted on each folder:
+Produces a list of all folders found in a SharePoint document library.  The following information is extracted on each folder:
 * total number of files
 * total file size (in bytes) of all files inside
 * last modified date of all files inside
@@ -52,6 +52,14 @@ Position: Named
 Accept pipeline input: False
 ```
 
+### -DisableProgressCursor
+Use this parameter if the spinning cursor that indicates progress causes you any problems
+
+```yaml
+Type: SwitchParameter
+Position: Named
+Accept pipeline input: False
+```
 
 ## Examples
 
